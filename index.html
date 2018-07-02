@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Vleppo - A Transparent Marketplace</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+        crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./scripts/IOTA/iota-browser.js"></script>
+    <script type="text/javascript" src="./scripts/IOTA/mam.web.js"></script>
+    <script  type=""text/javascript"" src="./scripts/Vleppo/main.js"></script> 
+    <!-- <script type="text/javascript" src="./node_modules/mam.client.js/lib/mam.client.js"></script> -->
+    <link rel="stylesheet" href="./assets/styles/vleppoStyles.css">
+
+
+    <!-- <style type="text/css">
+a:link {text-decoration: none; color: blue;}
+body {font-size: 1em; font-family: arial, helvetica; background-color: #fffada;}
+textarea {font-family: monospace;}
+button {background-color: #008cba; border: 1px solid black; color: white; padding: 5px 15px; text-align: center; text-decoration: none; display: inline-block; border-radius: 4px; font-size: 16px;}
+h1 {font-family: arial, helvetica;font-size: 2.5em;}
+input {padding: 5px 5px; margin: 5px 0; box-sizing: border-box; border: 1px solid black; border-radius: 4px; background-color: white; font-family: monospace; font-size: 1.1em;}
+select {width: 40%; border: 1px solid black; border-radius: 4px; background-color: white; font-family: arial, helvetica; font-size: 0.9em;}
+.container {background-color: #008cba; border: 1px solid black; color: white; padding: 5px 15px; margin: 0; font-family: monospace;}
+#disclaimer{background-color: #fda429; border: 1px solid black; color: black; padding: 5px 15px; margin: 0; font-family: monospace;}
+#warning{background-color: #000000; color: white; padding: 0; margin: 5px 0px; font-family: monospace; font-size: 1.2em;}
+</style> -->
+
+</head>
+
+<body>
+    <!-- <h1> <script language="JavaScript" type="text/javascript">showIOTAImage();</script> IOTA Masked Authenticated Messaging Demo (v1.1.0) <script language="JavaScript" type="text/javascript">showIOTAImage();</script> </h1> -->
+    <div class="container container-fluid">
+        <h1>
+            Welcome to Vleppo
+        </h1>
+        <img width="300" alt="Vleppo Logo" src="./assets/images/Vleppo.png">
+    </div>
+
+    <div class="container-fluid">
+        <h1>A model for a transparent marketplace</h1>
+        <p>This demo illustrates how the IOTA Masked Authenticated Messaging can be used to capture price negatiations in real-time
+            and store this information in the Tangle</p>
+        <p>This demo connects to the IOTA Testnet</p>
+    </div>
+
+    <div class="row container-fluid">
+        <div class="col-6 container card">
+            <div class="card-header">
+                Create Item
+            </div>
+            <div class="card-body">
+                <p class="card-text">Create an item for sale, ie open IOTA MAM channel.</p>
+                <div class="form-group">
+                    <label for="itemDescription">Description:</label>
+                    <input type="text" class="form-control" id="itemDescription">
+                </div>
+                <!-- <div class="form-group">
+                    <label for="itemTag">Tag:</label>
+                    <input type="text" class="form-control" id="itemTag">
+                </div> -->
+                <button type="button" class="btn btn-primary" onclick="vp.createChannel('Y')">Create Item</button>
+            </div>
+        </div>
+        <div class="col-6 container card">
+            <div class="card-header">
+                Current Item
+            </div>
+            <div class="card-body">
+                <p class="card-text">Display the currently tracked item.</p>
+                <button type="button" class="btn btn-primary" onclick="vp.publish()">Submit Bid</button>
+                <!-- <button type="button" class="btn btn-primary" onclick="vp.retrieve()">Retrieve stuff</button> -->
+                <!-- <button type="button" class="btn btn-primary" onclick="Vleppo.vleppoCreateItemForSale('Tomas is the best')">Connect to IOTA Testnet</button> -->
+            </div>
+            <div class="form-group">
+                <label for="itemPrice">Price:</label>
+                <input type="number" class="form-control" id="itemPrice">
+            </div>
+            <div class="form-group">
+                <label for="messageRoot">Message Root</label>
+                <input readonly type="text" class="form-control" id="messageRoot">
+            </div>
+        </div>
+    </div>
+
+    <div class="row container-fluid">
+        <div class="col-4">
+            <h3>Bids</h3>
+            <table id="offerTable" class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="col-2">User</th>
+                        <th class="col-3">Item</th>
+                        <th class="col-2">Price</th>
+                        <th class="col-5">Date</th>
+                    </tr>
+                </thead>
+                <tbody id="offerTableBody">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="col-4">
+            <h3>Bids</h3>
+        </div>
+        <div class="col-4">
+            <h3>Actions</h3>
+        </div>
+    </div>
+    <!-- <script type="module" src="./scripts/Vleppo/vleppoIri.js"></script> -->
+    <script  type="module" src="./scripts/Vleppo/main.js"></script> 
+</body>
