@@ -24,11 +24,13 @@ iota = new IOTA({
     'port': 443
 });
 channelRoot = "";
+mamState = null;
+
 
  class Vleppo {
     
-    get mamState() { return this._mamState; }
-    set mamState(value) { this._mamState = value;}
+    // get mamState() { return this._mamState; }
+    // set mamState(value) { this._mamState = value;}
 
     // get iota() { return this._iota; }
     // set iota(value) { this._iota = value;}
@@ -55,11 +57,11 @@ channelRoot = "";
         //this.connectToIota();
 
         let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
-        this.mamState = this.Mam.init(iota, trytes, 2);
+        mamState = this.Mam.init(iota, trytes, 2);
 
         // Attach the payload
-        let message = this.Mam.create(this.mamState, trytes);
-        this.mamState = message.state;
+        let message = this.Mam.create(mamState, trytes);
+        mamState = message.state;
         let obj = await this.Mam.attach(message.payload, message.address);
         
         channelRoot = message.root;
@@ -96,14 +98,14 @@ channelRoot = "";
         // }
         var price = document.getElementById("itemPrice").value;
         let dateStamp = this.getDateAndTime();
-        this.mamState = this.Mam.init(iota, trytes, 2);
+       // mamState = this.Mam.init(iota, trytes, 2);
         currentUser = "Tomas";
         var itemObj = { "user": currentUser, "price": price, "date": dateStamp, "channel": currentChannelStr};
         // Create MAM Payload
         let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
-        let message = this.Mam.create(this.mamState, trytes);
+        let message = this.Mam.create(mamState, trytes);
         // Save new mamState
-        this.mamState = message.state;
+        mamState = message.state;
         // Attach the payload
         await this.Mam.attach(message.payload, message.address);
         console.log("Publich succeded")
@@ -114,11 +116,15 @@ channelRoot = "";
         let aVal = document.getElementById("channelNew").value;
         if(ch == "NEW" && aVal != null) {
             
-            theRoot = aVal;
-         
+            theRoot = aVal;       
             var numRows = document.getElementById("offerTableBody").getElementsByTagName("tr").length;
             for (let i = 0; i < numRows; i++) {
-                document.getElementById("offerTableBody").deleteRow(i);
+                try {
+                    document.getElementById("offerTableBody").deleteRow(i);
+                } catch(e) {
+                    console.log("WTF " + i);
+                }
+                
             }
             channelRoot = aVal;
 
@@ -127,6 +133,8 @@ channelRoot = "";
         }
 
         document.getElementById("messageRoot").value = channelRoot;
+        if (mamState == null)
+            mamState = this.Mam.init(iota, null, 2);
         while (true) {
             let resp = await this.Mam.fetch(theRoot, null, null, this.parseReturnValues);
             if (resp != null)
@@ -145,7 +153,7 @@ channelRoot = "";
 
             var table = document.getElementById("offerTableBody");
 
-            var row = table.insertRow(0);
+            var row = table.insertRow(-1);
 
             var cell1 = row.insertCell(-1); //USer
             cell1.className += " col text-overflow: ellipsis";
