@@ -17,7 +17,7 @@
         crossorigin="anonymous"></script>
     <script type="text/javascript" src="./scripts/IOTA/iota-browser.js"></script>
     <script type="text/javascript" src="./scripts/IOTA/mam.web.js"></script>
-    <script  type=""text/javascript"" src="./scripts/Vleppo/main.js"></script> 
+    <script type="" text/javascript "" src="./scripts/Vleppo/main.js"></script>
     <!-- <script type="text/javascript" src="./node_modules/mam.client.js/lib/mam.client.js"></script> -->
     <link rel="stylesheet" href="./assets/styles/vleppoStyles.css">
 
@@ -37,85 +37,97 @@ select {width: 40%; border: 1px solid black; border-radius: 4px; background-colo
 
 </head>
 
-<body>
+<body class="container-fluid">
     <!-- <h1> <script language="JavaScript" type="text/javascript">showIOTAImage();</script> IOTA Masked Authenticated Messaging Demo (v1.1.0) <script language="JavaScript" type="text/javascript">showIOTAImage();</script> </h1> -->
-    <div class="container container-fluid">
-        <h1>
+    <div>
+        <h1 class="text-centre">
             Welcome to Vleppo
         </h1>
         <img width="300" alt="Vleppo Logo" src="./assets/images/Vleppo.png">
     </div>
-
-    <div class="container-fluid">
-        <h1>A model for a transparent marketplace</h1>
-        <p>This demo illustrates how the IOTA Masked Authenticated Messaging can be used to capture price negatiations in real-time
-            and store this information in the Tangle</p>
-        <p>This demo connects to the IOTA Testnet</p>
+    <div >
+        <h3 class="text-centre">A model for a transparent marketplace</h3>
+        <p class="text-left">This demo illustrates how the IOTA Masked Authenticated Messaging can be used to capture price negatiations in real-time
+            and store this information in the Tangle</p><br>
+        <p class="text-left">This demo connects to the IOTA Testnet</p>
     </div>
+    <div class="row">
+        <div class="col-6">
+                <h3>Bids</h3>
+        </div>
+           
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="row">                  
+                    <table id="offerTable" class="table table-striped table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th class="col-3">User</th>
+                                <th class="col-4">Item</th>
+                                <th class="col-2">Price</th>
+                                <th class="col-3">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="offerTableBody">
 
-    <div class="row container-fluid">
-        <div class="col-6 container card">
-            <div class="card-header">
-                Create Item
+                        </tbody>
+                    </table>
+
             </div>
-            <div class="card-body">
-                <p class="card-text">Create an item for sale, ie open IOTA MAM channel.</p>
-                <div class="form-group">
-                    <label for="itemDescription">Description:</label>
-                    <input type="text" class="form-control" id="itemDescription">
+        </div>
+        <div class="col-6">
+            <div class="row">
+                <div class="col-6 container card">
+                    <div class="card-header">
+                        Current Item
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Display the currently tracked item.</p>
+                       
+                        <!-- <button type="button" class="btn btn-primary" onclick="vp.retrieve()">Retrieve stuff</button> -->
+                        <!-- <button type="button" class="btn btn-primary" onclick="Vleppo.vleppoCreateItemForSale('Tomas is the best')">Connect to IOTA Testnet</button> -->
+                    </div>
+                    <div class="form-group form-inline">
+                        <label for="itemPrice">Bid: </label>
+                        <input type="number" class="form-control" id="itemPrice">
+                        <button type="button" class="btn btn-primary" onclick="vp.publish()">Submit Bid</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="messageRoot">Current Channel</label>
+                        <input readonly type="text" class="form-control" id="messageRoot">
+                    </div>
                 </div>
-                <!-- <div class="form-group">
-                    <label for="itemTag">Tag:</label>
-                    <input type="text" class="form-control" id="itemTag">
-                </div> -->
-                <button type="button" class="btn btn-primary" onclick="vp.createChannel('Y')">Create Item</button>
-            </div>
-        </div>
-        <div class="col-6 container card">
-            <div class="card-header">
-                Current Item
-            </div>
-            <div class="card-body">
-                <p class="card-text">Display the currently tracked item.</p>
-                <button type="button" class="btn btn-primary" onclick="vp.publish()">Submit Bid</button>
-                <!-- <button type="button" class="btn btn-primary" onclick="vp.retrieve()">Retrieve stuff</button> -->
-                <!-- <button type="button" class="btn btn-primary" onclick="Vleppo.vleppoCreateItemForSale('Tomas is the best')">Connect to IOTA Testnet</button> -->
-            </div>
-            <div class="form-group">
-                <label for="itemPrice">Price:</label>
-                <input type="number" class="form-control" id="itemPrice">
-            </div>
-            <div class="form-group">
-                <label for="messageRoot">Message Root</label>
-                <input readonly type="text" class="form-control" id="messageRoot">
+                <div class="col-6 container card">
+                    <div class="card-header">
+                        Create Item
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Create an item for sale, ie open IOTA MAM channel.</p>
+                        <div class="form-group form-inline">
+                            <label for="itemDescription">Description: </label>
+                            <input type="text" class="form-control" id="itemDescription">
+                            <button type="button" class="btn btn-primary" onclick="vp.createChannel('Y')">Create Item</button>
+                        </div>
+                        <div class="form-group form-inline">
+                                <label for="channelNew">Channel: </label>
+                                <input type="text" class="form-control" id="channelNew">
+                                <button type="button" class="btn btn-primary" onclick="vp.retrieve('NEW')">Subscribe</button>
+                            </div>
+                        <!-- <div class="form-group">
+                                    <label for="itemTag">Tag:</label>
+                                    <input type="text" class="form-control" id="itemTag">
+                                </div> -->
+                        
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <div class="row container-fluid">
-        <div class="col-4">
-            <h3>Bids</h3>
-            <table id="offerTable" class="table table-striped table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th class="col-2">User</th>
-                        <th class="col-3">Item</th>
-                        <th class="col-2">Price</th>
-                        <th class="col-5">Date</th>
-                    </tr>
-                </thead>
-                <tbody id="offerTableBody">
 
-                </tbody>
-            </table>
-        </div>
-        <div class="col-4">
-            <h3>Bids</h3>
-        </div>
-        <div class="col-4">
-            <h3>Actions</h3>
-        </div>
-    </div>
+
     <!-- <script type="module" src="./scripts/Vleppo/vleppoIri.js"></script> -->
-    <script  type="module" src="./scripts/Vleppo/main.js"></script> 
+    <script type="module" src="./scripts/Vleppo/main.js"></script>
 </body>
