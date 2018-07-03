@@ -40721,12 +40721,13 @@ const txHashesToMessages = async hashes => {
         .filter(item => item !== undefined)
 }
 
-const attach = async (trytes, root, depth = 6, mwm = 14) => {
+const attach = async (trytes, root, depth = 6, mwm = 14, tag = '') => {
     const transfers = [
         {
             address: root,
             value: 0,
-            message: trytes
+            message: trytes,
+            tag: tag
         }
     ]
     // if (isClient) curl.overrideAttachToTangle(iota)

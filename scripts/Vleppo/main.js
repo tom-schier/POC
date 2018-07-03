@@ -1,22 +1,7 @@
 
-//import {Vleppo} from "./vleppoIri.js";
+//'host': 'https://nodes.testnet.iota.org',
+// 'host': 'https://nodes.devnet.thetangle.org',
 
-// export class App {
-
-//     constructor() {
-//         this.vp = new Vleppo();
-//         this.vp.connectToIota();
-//     }
-      
-//     createChannel() {
-//         let channel = vp.createChannel();
-//     }
-// }
-
-// export function createChannel() {
-//     this.vp = new Vleppo();
-//     let channel = vp.createChannel();
-// }
 currentChannelStr = "";
 currentUser = "";
 iota = new IOTA({
@@ -29,23 +14,11 @@ mamState = null;
 
  class Vleppo {
     
-    // get mamState() { return this._mamState; }
-    // set mamState(value) { this._mamState = value;}
-
-    // get iota() { return this._iota; }
-    // set iota(value) { this._iota = value;}
-
-    // get channelRoot() { return this._channelRoot; }
-    // set channelRoot(value) { this._channelRoot = value;}
-
     get Mam() { return this._Mam; }
     set Mam(value) { this._Mam = value;}
 
-    // get currentChannelStr() { return this._currentChannelStr; }
-    // set currentChannelStr(value) { this._currentChannelStr = value;}
 
     constructor() {
-      //  this.connectToIota();
         this.Mam = require('mam.web.js');
     };
   
@@ -54,15 +27,15 @@ mamState = null;
         //var tag = document.getElementById("itemTag").value;
         var itemObj = { "descr": descr};
 
-        //this.connectToIota();
 
         let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
+        let tagValue = iota.utils.toTrytes("Vleppo");
         mamState = this.Mam.init(iota, trytes, 2);
 
         // Attach the payload
         let message = this.Mam.create(mamState, trytes);
         mamState = message.state;
-        let obj = await this.Mam.attach(message.payload, message.address);
+        let obj = await this.Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
         
         channelRoot = message.root;
         currentChannelStr = descr;
@@ -93,21 +66,20 @@ mamState = null;
 
 
     async publish() {
-        // if (iota == null) {
-        //     this.connectToIota();
-        // }
+
         var price = document.getElementById("itemPrice").value;
         let dateStamp = this.getDateAndTime();
-       // mamState = this.Mam.init(iota, trytes, 2);
+
         currentUser = "Tomas";
         var itemObj = { "user": currentUser, "price": price, "date": dateStamp, "channel": currentChannelStr};
         // Create MAM Payload
         let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
+        let tagValue = iota.utils.toTrytes("Vleppo");
         let message = this.Mam.create(mamState, trytes);
         // Save new mamState
         mamState = message.state;
         // Attach the payload
-        await this.Mam.attach(message.payload, message.address);
+        await this.Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
         console.log("Publich succeded")
     }
 
@@ -143,10 +115,6 @@ mamState = null;
     }
 
     parseReturnValues(data){
-        // let iota = new IOTA({
-        //     'host': 'https://nodes.testnet.iota.org',
-        //     'port': 443
-        // });
 
         let json = JSON.parse(iota.utils.fromTrytes(data));
         if (json != null) {
@@ -207,8 +175,7 @@ mamState = null;
 
 
 let vp = new Vleppo();
-//vp.connectToIota();
-//let channel = vp.createChannel();
+
 
 
 
