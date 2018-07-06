@@ -10,47 +10,57 @@ iota = new IOTA({
 });
 channelRoot = "";
 mamState = null;
+Mam = null;
+getDataCallback = null;
 
-
- class Vleppo {
-    
-    get Mam() { return this._Mam; }
-    set Mam(value) { this._Mam = value;}
-
+class Vleppo {
 
     constructor() {
-        this.Mam = require('mam.web.js');
+        Mam = require('mam.web.js');       
     };
-  
-     async createChannel(){
+
+    clearTable() {
+        document.getElementById("messageRoot").value = channelRoot;
+        var numRows = document.getElementById("offerTableBody").getElementsByTagName("tr").length;
+        for (let i = numRows - 1; i >= 0; i--) {
+            try {
+                document.getElementById("offerTableBody").deleteRow(i);
+            } catch (e) {
+                console.log("WTF " + i);
+            }
+        }
+    }
+
+    async createChannel() {
         var descr = document.getElementById("itemDescription").value;
         //var tag = document.getElementById("itemTag").value;
-        var itemObj = { "descr": descr};
+        var itemObj = { "descr": descr };
 
 
         let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
         let tagValue = iota.utils.toTrytes("Vleppo");
-        mamState = this.Mam.init(iota, trytes, 2);
-
+        mamState = Mam.init(iota, undefined, 2);
+        channelRoot = mamState.seed;
         // Attach the payload
-        let message = this.Mam.create(mamState, trytes);
+        let message = Mam.create(mamState, trytes);
         mamState = message.state;
-        let obj = await this.Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
-        
+        let obj = await Mam.attach(message.payload, message.address, undefined, undefined,  tagValue);
+        console.log("Channel created." + obj);
         channelRoot = message.root;
         currentChannelStr = descr;
-        this.retrieve();
+        document.getElementById("channelNew").value = '';
         document.getElementById("messageRoot").value = channelRoot;
-        return message.root;    
-    }
 
-    // connectToIota() {
-    //     let iota = new IOTA({
-    //         'host': 'https://nodes.testnet.iota.org',
-    //         'port': 443
-    //     });
-    //     //this.iota = iota;
-    // }
+        let cont = true;
+        while (cont) {
+            let resp = await Mam.fetch(channelRoot, 'public');
+            if (resp != null && resp != '') {
+                 this.clearTable();
+                 this.writeMessages(resp);
+            }
+        }
+        return message.root;
+    }
 
     getDateAndTime() {
         let a = new Date();
@@ -67,54 +77,64 @@ mamState = null;
 
     async publish() {
 
+        if (channelRoot == '' || channelRoot == null) {
+            console.log("No roor in publish. Exit here");
+            return;
+        }
+
         var price = document.getElementById("itemPrice").value;
         let dateStamp = this.getDateAndTime();
 
         currentUser = "Tomas";
-        var itemObj = { "user": currentUser, "price": price, "date": dateStamp, "channel": currentChannelStr};
+        var itemObj = { "user": currentUser, "price": price, "date": dateStamp, "channel": currentChannelStr };
         // Create MAM Payload
         let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
         let tagValue = iota.utils.toTrytes("Vleppo");
-        let message = this.Mam.create(mamState, trytes);
-        // Save new mamState
-        mamState = message.state;
-        // Attach the payload
-        await this.Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
-        console.log("Publich succeded")
+        let message = Mam.create(mamState, trytes);
+
+        let obj = await Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
+        console.log("Publich succeded");
     }
 
-    async retrieve(ch) {
-        let theRoot = "";
-        let aVal = document.getElementById("channelNew").value;
-        if(ch == "NEW" && aVal != null) {
-            
-            theRoot = aVal;       
-            var numRows = document.getElementById("offerTableBody").getElementsByTagName("tr").length;
-            for (let i = 0; i < numRows; i++) {
-                try {
-                    document.getElementById("offerTableBody").deleteRow(i);
-                } catch(e) {
-                    console.log("WTF " + i);
-                }
-                
-            }
-            channelRoot = aVal;
+    writeMessages(resp) {
+        if (resp == null)
+            return;
+        let msgLength = resp.messages.length;
+        for (let i = 0; i < msgLength; i++) {
+            let msg = resp.messages[i];
+            let ff = iota.utils.fromTrytes(msg);
+            this.parseReturnValues(msg);
+            console.log("Decoded message is : " + ff);
+        }
+    }
 
-        } else {
-            theRoot = channelRoot;            
+
+    async retrieve() {
+
+        let aVal = document.getElementById("channelNew").value;
+        if (aVal != null && aVal != '') {
+            channelRoot = aVal;
+            mamState = Mam.init(iota, channelRoot, 2);
+        }
+
+        if (channelRoot == '') {
+            console.log("No channel root. Exit here");
+            return;
         }
 
         document.getElementById("messageRoot").value = channelRoot;
-        if (mamState == null)
-            mamState = this.Mam.init(iota, null, 2);
-        while (true) {
-            let resp = await this.Mam.fetch(theRoot, null, null, this.parseReturnValues);
-            if (resp != null)
-                theRoot = resp.nextRoot;
+        let cont = true;
+        while (cont) {
+            let resp = await Mam.fetch(channelRoot, 'public');
+            if (resp != null && resp != '') {
+                 this.clearTable();
+                 this.writeMessages(resp);
+            }
         }
+        console.log("Response is " + resp)
     }
 
-    parseReturnValues(data){
+    parseReturnValues(data) {
 
         let json = JSON.parse(iota.utils.fromTrytes(data));
         if (json != null) {
@@ -135,12 +155,12 @@ mamState = null;
                 currentChannelStr = json.descr;
                 cell1.innerHTML = "";
                 cell2.innerHTML = json.descr;
-                cell3.innerHTML = "";   
+                cell3.innerHTML = "";
                 cell4.innerHTML = "";
             } else {
                 cell1.innerHTML = json.user;
                 cell2.innerHTML = currentChannelStr;
-                cell3.innerHTML = json.price;   
+                cell3.innerHTML = json.price;
                 cell4.innerHTML = json.date;
             }
 
@@ -149,7 +169,7 @@ mamState = null;
     }
 
 
-    buildTableRow(rowData){
+    buildTableRow(rowData) {
         if (rowData != null) {
             // Find a <table> element with id="myTable":
             var table = document.getElementById("offerTableBody");
