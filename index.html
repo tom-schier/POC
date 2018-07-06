@@ -52,13 +52,18 @@ select {width: 40%; border: 1px solid black; border-radius: 4px; background-colo
         <p class="text-left">This demo connects to the IOTA Testnet</p>
     </div>
     <div class="row">
-        <div class="col-6">
-                <h3>Bids</h3>
+        <div class="col-3">
+            <h3>Offers</h3>
         </div>
-           
+        <div class="col-3">
+            <h3>Bids</h3>
+        </div>  
+        <div class="col-6">
+            <h3>Actions</h3>
+        </div>  
     </div>
     <div class="row">
-        <div class="col-6">
+        <div class="col-3">
             <div class="row">                  
                     <table id="offerTable" class="table table-striped table-bordered">
                         <thead class="thead-dark">
@@ -70,6 +75,24 @@ select {width: 40%; border: 1px solid black; border-radius: 4px; background-colo
                             </tr>
                         </thead>
                         <tbody id="offerTableBody">
+
+                        </tbody>
+                    </table>
+
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="row">                  
+                    <table id="bidTable" class="table table-striped table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th class="col-3">User</th>
+                                <th class="col-4">Item</th>
+                                <th class="col-2">Price</th>
+                                <th class="col-3">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bidTableBody">
 
                         </tbody>
                     </table>
@@ -89,9 +112,14 @@ select {width: 40%; border: 1px solid black; border-radius: 4px; background-colo
                         <!-- <button type="button" class="btn btn-primary" onclick="Vleppo.vleppoCreateItemForSale('Tomas is the best')">Connect to IOTA Testnet</button> -->
                     </div>
                     <div class="form-group form-inline">
-                        <label for="itemPrice">Bid: </label>
-                        <input type="number" class="form-control" id="itemPrice">
-                        <button type="button" class="btn btn-primary" onclick="vp.publish()">Submit Bid</button>
+                        <label for="itemBid">Bid: </label>
+                        <input type="number" class="form-control" id="itemBid">
+                        <button type="button" class="btn btn-primary" onclick="vp.publish('BID')">Submit Bid</button>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label for="itemOffer">Offer: </label>
+                        <input type="number" class="form-control" id="itemOffer">
+                        <button type="button" class="btn btn-primary" onclick="vp.publish('OFFER')">Submit Offer</button>
                     </div>
                     <div class="form-group">
                         <label for="messageRoot">Current Channel</label>
