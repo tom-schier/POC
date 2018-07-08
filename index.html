@@ -68,10 +68,10 @@ select {width: 40%; border: 1px solid black; border-radius: 4px; background-colo
                     <table id="offerTable" class="table table-striped table-bordered">
                         <thead class="thead-dark">
                             <tr>
-                                <th class="col-3">User</th>
-                                <th class="col-4">Item</th>
-                                <th class="col-2">Price</th>
-                                <th class="col-3">Date</th>
+                                <th class="col-4">User</th>
+                                <!-- <th class="col-4">Item</th> -->
+                                <th class="col-3">Price</th>
+                                <th class="col-5">Date</th>
                             </tr>
                         </thead>
                         <tbody id="offerTableBody">
@@ -86,10 +86,10 @@ select {width: 40%; border: 1px solid black; border-radius: 4px; background-colo
                     <table id="bidTable" class="table table-striped table-bordered">
                         <thead class="thead-dark">
                             <tr>
-                                <th class="col-3">User</th>
-                                <th class="col-4">Item</th>
-                                <th class="col-2">Price</th>
-                                <th class="col-3">Date</th>
+                                <th class="col-4">User</th>
+                                <!-- <th class="col-4">Item</th> -->
+                                <th class="col-3">Price</th>
+                                <th class="col-5">Date</th>
                             </tr>
                         </thead>
                         <tbody id="bidTableBody">
@@ -125,6 +125,10 @@ select {width: 40%; border: 1px solid black; border-radius: 4px; background-colo
                         <label for="messageRoot">Current Channel</label>
                         <input readonly type="text" class="form-control" id="messageRoot">
                     </div>
+                    <div class="form-group">
+                        <label for="currentItem">Current Item</label>
+                        <input readonly type="text" class="form-control" id="currentItem">
+                    </div>
                 </div>
                 <div class="col-6 container card">
                     <div class="card-header">
@@ -135,7 +139,11 @@ select {width: 40%; border: 1px solid black; border-radius: 4px; background-colo
                         <div class="form-group form-inline">
                             <label for="itemDescription">Description: </label>
                             <input type="text" class="form-control" id="itemDescription">
-                            <button type="button" class="btn btn-primary" onclick="vp.createChannel()">Create Item</button>
+                            <button type="button" class="btn btn-primary" onclick="vp.publish('NEW')">Create Item</button>
+                        </div>
+                        <div class="form-group form-inline">
+                            <label for="initialPrice">Initial Price: </label>
+                            <input type="number" class="form-control" id="initialPrice">
                         </div>
                         <div class="form-group form-inline">
                                 <label for="channelNew">Channel: </label>

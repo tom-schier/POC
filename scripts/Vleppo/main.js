@@ -9,6 +9,7 @@ iota = new IOTA({
     'port': 443
 });
 channelRoot = "";
+//currentChannelRoot = "";
 mamState = null;
 Mam = null;
 getDataCallback = null;
@@ -31,7 +32,6 @@ class Vleppo {
     };
 
     clearTable() {
-        document.getElementById("messageRoot").value = channelRoot;
         var numRows = document.getElementById("offerTableBody").getElementsByTagName("tr").length;
         for (let i = numRows - 1; i >= 0; i--) {
             try {
@@ -52,41 +52,25 @@ class Vleppo {
 
     async createChannel() {
         var descr = document.getElementById("itemDescription").value;
-        //var tag = document.getElementById("itemTag").value;
         var itemObj = { "descr": descr };
 
-
         let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
-        let tagValue = iota.utils.toTrytes("Vleppo");
         mamState = Mam.init(iota, undefined, 2);
-        channelRoot = mamState.seed;
-        // Attach the payload
+
         let message = Mam.create(mamState, trytes);
         mamState = message.state;
-        let obj = await Mam.attach(message.payload, message.address, undefined, undefined,  tagValue);
-        console.log("Channel created." + obj);
-        channelRoot = message.root;
-        currentChannelStr = descr;
+
+        console.log("Channel created." + mamState.seed);
+
         document.getElementById("channelNew").value = '';
         document.getElementById("messageRoot").value = channelRoot;
-        let lastRoot = '';
-        let cont = true;
-        let z = 0;
-        while (cont) {
-            let resp = await Mam.fetch(channelRoot, 'public');
-            if (resp != null && resp != '' && z > 0) {
-                 if (resp.nextRoot == lastRoot) {
-                    lastRoot = resp.nextRoot;
-                    continue;
-                 }
-                 lastRoot = resp.nextRoot;  
 
-            }
-            z++;
-            this.clearTable();
-            this.writeMessages(resp);
-        }
-        return message.root;
+        let tagValue = iota.utils.toTrytes("VLEPPO MARKET");
+
+        channelRoot = message.root;
+        let obj = await Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
+        this.retrieve();
+        return mamState.seed;
     }
 
     getDateAndTime() {
@@ -101,33 +85,88 @@ class Vleppo {
         return time;
     }
 
+    async publishToNewChannel(){
 
-    async publish(transType) {
+        this.clearTable();
+        let transAmount = document.getElementById("initialPrice").value;
+        let descr = document.getElementById("itemDescription").value;
+        let dateStamp = this.getDateAndTime();
+        currentUser = "Tomas";
 
-        if (channelRoot == '' || channelRoot == null) {
-            console.log("No roor in publish. Exit here");
-            return;
-        }
-        var transAmount = 0;
-        if (transType == 'BID'){
-            transAmount = document.getElementById("itemBid").value;
-        } else {
-            transAmount = document.getElementById("itemOffer").value;
-        }
+        document.getElementById("channelNew").value = '';
+        document.getElementById("messageRoot").value = '';
+        document.getElementById("currentItem").value = descr;
 
+        let tagValue = iota.utils.toTrytes("VLEPPO MARKET");
+        var itemObj = new VleppoMessage('channelRoot',"NEW",transAmount,dateStamp,currentUser, descr);
+        let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
+        mamState = Mam.init(iota, undefined, 2);
+        let message = Mam.create(mamState, trytes);
+        mamState = message.state;
+        let obj = await Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
+        channelRoot = message.root;
+        document.getElementById("channelNew").value = '';
+        document.getElementById("messageRoot").value = channelRoot;
+        console.log("NEW Publish succeeeded to " + channelRoot);
+        this.startDateRetrieval(channelRoot);
+    }
+
+    async publishBid(){
+
+        let transAmount = document.getElementById("itemBid").value;
+        let descr = document.getElementById("currentItem").value;
         let dateStamp = this.getDateAndTime();
 
         currentUser = "Tomas";
-        var itemObj = new VleppoMessage(channelRoot,transType,transAmount,dateStamp,currentUser, currentChannelStr);
-      //  { "user": currentUser, "price": price, "date": dateStamp, "channel": currentChannelStr };
-        // Create MAM Payload
-        let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
-        let tagValue = iota.utils.toTrytes("Vleppo");
-        let message = Mam.create(mamState, trytes);
+        var itemObj = new VleppoMessage(channelRoot,"BID",transAmount,dateStamp,currentUser, descr);
 
+        let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
+        let tagValue = iota.utils.toTrytes("VLEPPO MARKET");
+        let message = Mam.create(mamState, trytes);
+        mamState = message.state;
         let obj = await Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
-        console.log("Publich succeded");
+        console.log("BID Publish succeeeded to " + channelRoot);        
     }
+
+    async publishOffer(){
+        let transAmount = document.getElementById("itemOffer").value;
+        let descr = document.getElementById("currentItem").value;
+        let dateStamp = this.getDateAndTime();
+
+        currentUser = "Tomas";
+        var itemObj = new VleppoMessage(channelRoot,"OFFER",transAmount,dateStamp,currentUser, descr);
+
+        let trytes = iota.utils.toTrytes(JSON.stringify(itemObj));
+        let tagValue = iota.utils.toTrytes("VLEPPO MARKET");
+        let message = Mam.create(mamState, trytes);
+        mamState = message.state;
+        let obj = await Mam.attach(message.payload, message.address, undefined, undefined, tagValue);
+        console.log("OFFER Publish succeeeded to " + channelRoot);
+    }
+
+    async publish(transType) {
+
+        if (transType == 'BID'){
+            this.publishBid();
+        }
+        if (transType == 'NEW'){
+            this.publishToNewChannel();
+        } 
+        if (transType == 'OFFER'){
+            this.publishOffer();
+        }
+    }
+
+    
+	async startDateRetrieval(rootVal) {
+			var resp = await Mam.fetch(rootVal, 'public', null, (data) => {
+				let json = JSON.parse(iota.utils.fromTrytes(data));
+                console.log("Retrieved: " + json);
+                this.parseReturnValues(data);
+
+			});
+		    this.startDateRetrieval(resp.nextRoot);
+	}
 
     writeMessages(resp) {
         if (resp == null)
@@ -141,13 +180,12 @@ class Vleppo {
         }
     }
 
-
     async retrieve() {
 
         let aVal = document.getElementById("channelNew").value;
         if (aVal != null && aVal != '') {
             channelRoot = aVal;
-            this.clearTable();
+            
             mamState = Mam.init(iota, channelRoot, 2);
         }
 
@@ -156,25 +194,13 @@ class Vleppo {
             return;
         }
 
-        document.getElementById("messageRoot").value = channelRoot;
-        let lastRoot = '';
-        let cont = true;
-        let z = 0;
-        while (cont) {
-            let resp = await Mam.fetch(channelRoot, 'public');
-            if (resp != null && resp != '' && z > 0) {
-                 if (resp.nextRoot == lastRoot) {
-                    lastRoot = resp.nextRoot;
-                    continue;
-                 }
-                 lastRoot = resp.nextRoot;  
+        document.getElementById("initialPrice").value = '';
+        document.getElementById("itemDescription").value = '';
 
-            }
-            z++;
-            this.clearTable();
-            this.writeMessages(resp);
-        }
-        console.log("Response is " + resp)
+        document.getElementById("messageRoot").value = channelRoot;
+        document.getElementById("currentItem").value = ""; 
+        this.clearTable();
+        this.startDateRetrieval(channelRoot);
     }
 
     parseReturnValues(data) {
@@ -190,31 +216,23 @@ class Vleppo {
             if (transType == 'OFFER')
                 table = document.getElementById("offerTableBody");
 
-            if (transType == null)
-                table = document.getElementById("bidTableBody");                
-
+            if (transType == 'NEW') {
+                table = document.getElementById("offerTableBody"); 
+                document.getElementById("currentItem").value = json.description; 
+            }
+                              
             var row = table.insertRow(-1);
 
-            var cell1 = row.insertCell(-1); //USer
-            cell1.className += " col text-overflow: ellipsis";
-            var cell2 = row.insertCell(-1); //Item
-            cell2.className += " col text-overflow: ellipsis";
+            var cell1 = row.insertCell(-1); //User
+            cell1.className += " col-4 text-overflow: ellipsis";
+
             var cell3 = row.insertCell(-1); //Price
-            cell3.className += " col text-overflow: ellipsis";
+            cell3.className += " col-3 text-overflow: ellipsis";
             var cell4 = row.insertCell(-1); //Date
-            cell4.className += " col text-overflow: ellipsis";
-            if (json.descr != null) {
-                currentChannelStr = json.descr;
-                cell1.innerHTML = "";
-                cell2.innerHTML = json.descr;
-                cell3.innerHTML = "";
-                cell4.innerHTML = "";
-            } else {
-                cell1.innerHTML = json.userId;
-                cell2.innerHTML = json.description;
-                cell3.innerHTML = json.transAmount;
-                cell4.innerHTML = json.transDate;
-            }
+            cell4.className += " col-5 text-overflow: ellipsis";  
+            cell1.innerHTML = json.userId;
+            cell3.innerHTML = json.transAmount;
+            cell4.innerHTML = json.transDate;
 
         }
         console.log(JSON.stringify(json));
