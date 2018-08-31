@@ -1,0 +1,22 @@
+<div class="container container-fluid row xp-padding">
+    <div class="col-7">
+        <div class="container container-fluid xp-heading ">
+            <h1>
+              Welcome to {{ title }}!
+            </h1>
+            <h2>A model for a transparent marketplace</h2>
+            <img width="300" alt="Vleppo Logo" src="./assets/images/Vleppo.png">
+          </div>
+    </div>
+    <div class="col-5 xp-paragraph">
+        <div class="container-fluid">           
+            <p>This demo illustrates how the IOTA Masked Authenticated Messaging can be used to capture price negatiations in real-time and store this information in the Tangle</p>
+            <p>This demo connects to the IOTA Testnet</p>          
+          </div>
+    </div>
+</div>
+<div  class=" row xp-padding">
+    <app-trade [vleppoItems]="vleppoItems"></app-trade>
+</div>
+
+

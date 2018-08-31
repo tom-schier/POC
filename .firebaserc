@@ -1,5 +1,5 @@
 {
   "projects": {
-    "Vleppo": "vleppo-iri"
+    "default": "vleppo-iri"
   }
 }

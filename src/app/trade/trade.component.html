@@ -1,0 +1,149 @@
+<div class="row">
+    <div class="col-3">
+        <h3>Offers</h3>
+    </div>
+    <div class="col-3">
+        <h3>Bids</h3>
+    </div>
+    <div class="col-6">
+        <h3>Actions</h3>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-3">
+        <div class="row">
+            <table id="offerTable" class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="col-4">User</th>
+                        <!-- <th class="col-4">Item</th> -->
+                        <th class="col-3">Price</th>
+                        <th class="col-4">Date</th>
+                        <th class="col-1">Ver</th>
+                    </tr>
+                </thead>
+                <tbody id="offerTableBody">
+                    <tr *ngFor="let o of offerArray; let i = index">
+                        <td class="col-4 text-overflow: ellipsis">
+                            {{o.userId}}
+                        </td>
+                        <td class="col-3 text-overflow: ellipsis">
+                            {{o.transAmount}}
+                        </td>
+                        <td class="col-4 text-overflow: ellipsis">
+                            {{o.transDate}}
+                        </td>
+                        <td class="col-1 text-overflow: ellipsis">
+                            {{o.isVerified}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="row">
+            <table id="bidTable" class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="col-4">User</th>
+                        <!-- <th class="col-4">Item</th> -->
+                        <th class="col-3">Price</th>
+                        <th class="col-4">Date</th>
+                        <th class="col-1">Ver</th>
+                    </tr>
+                </thead>
+                <tbody id="bidTableBody">
+                    <tr *ngFor="let b of bidArray;let i = index">
+                        <td class="col-4 text-overflow: ellipsis">
+                            {{b.userId}}
+                        </td>
+                        <td class="col-3 text-overflow: ellipsis">
+                            {{b.transAmount}}
+                        </td>
+                        <td class="col-4 text-overflow: ellipsis">
+                            {{b.transDate}}
+                        </td>
+                        <td class="col-1 text-overflow: ellipsis">
+                            {{b.isVerified}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="row">
+            <div class="col-6 container card">
+                <div class="card-header">
+                    Current Item
+                </div>
+                <br>
+                <div class="form-group form-inline">
+                    <div class="col-3">
+                        <label for="itemBid">Bid: </label>
+                    </div>
+                    <div class="col-5">
+                        <input type="number" class="form-control" id="itemBid" [(ngModel)]="itemBid">
+                    </div>
+                    <div  class="col-4">
+                        <button type="button" class="btn btn-primary xp-button-full" (click)="publish('BID')">Submit Bid</button>
+                    </div>                
+                </div>
+                <div class="form-group form-inline">
+                    <div class="col-3">
+                        <label for="itemOffer">Offer: </label>
+                    </div>
+                    <div class="col-5">
+                        <input type="number" class="form-control" id="itemOffer" [(ngModel)]="itemOffer">
+                    </div>
+                    <div  class="col-4">
+                        <button type="button" class="btn btn-primary xp-button-full " (click)="publish('OFFER')">Submit Offer</button>
+                    </div>    
+                </div>
+                <div class="form-group">
+                    <label for="messageRoot">Current Channel</label>
+                    <input readonly type="text" class="form-control" id="messageRoot" [(ngModel)]="channelRoot">
+                </div>
+                <div class="form-group">
+                    <label for="currentItem">Current Item</label>
+                    <input readonly type="text" class="form-control" id="currentItem" [(ngModel)]="currentItem">
+                </div>
+            </div>
+            <div class="col-6 container card">
+                <div class="card-header row">
+                    Create Item
+                </div>
+                <div class="card-body">
+                    <p class="card-text row">Create an item for sale, ie open IOTA MAM channel.</p>
+                    <div class="form-group form-inline row">
+                        <label for="itemDescription" class="col-4">Description: </label>
+                        <input type="text" class="form-control col-5" id="itemDescription" [(ngModel)]="itemDescription">
+                        <button type="button" class="btn btn-primary col-3 xp-button-almost" (click)="publish('NEW')">Create Item</button>
+                    </div>
+                    <div class="form-group form-inline row">
+                        <label for="initialPrice" class="col-4">Initial Price: </label>
+                        <input type="number" class="form-control col-5" id="initialPrice" [(ngModel)]="initialPrice">
+                        <label class="col3"></label>
+                    </div> 
+                    <!-- <div class="form-group form-inline row">
+                        <button type="form-control button" class="btn btn-primary col-3 xp-button-almost" (click)="buildList()">Select</button>
+                        <select class="form-control col-9" [(ngModel)]="channelNew">
+                            <option *ngFor="let v of vleppoItems; let i = index" [ngValue]="v.channelId">{{v.channelId}}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-primary xp-button-almost row " (click)="retrieve()">Subscribe</button>
+                    </div> -->
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
